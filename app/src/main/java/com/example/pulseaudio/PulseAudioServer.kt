@@ -68,7 +68,7 @@ class PulseAudioServer(private val port: Int = 4713) {
             try {
                 val inputStream: InputStream = clientSocket.getInputStream()
                 val buffer = ByteArray(bufferSize)
-                var bytesRead: Int
+                var bytesRead: Int = 0
 
                 // Read incoming TCP bytes and feed them directly to the AudioTrack
                 while (isRunning && inputStream.read(buffer).also { bytesRead = it } != -1) {
