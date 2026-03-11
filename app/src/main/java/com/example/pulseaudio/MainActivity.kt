@@ -2,45 +2,61 @@ package com.example.pulseaudio
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var btnStart: Button
-    private lateinit var btnStop: Button
-    private lateinit var tvStatus: TextView
     private var pulseAudioServer: PulseAudioServer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        btnStart = findViewById(R.id.btnStart)
-        btnStop = findViewById(R.id.btnStop)
-        tvStatus = findViewById(R.id.tvStatus)
-
-        // Initialize server on port 4713
         pulseAudioServer = PulseAudioServer(4713)
 
-        btnStart.setOnClickListener {
+        val layout = LinearLayout(this)
+        layout.orientation = LinearLayout.VERTICAL
+        layout.setPadding(40, 40, 40, 40)
+
+        val title = TextView(this)
+        title.text = "PulseAudio TCP Receiver"
+        title.textSize = 24f
+
+        val status = TextView(this)
+        status.text = "Estado: detenido"
+
+        val startButton = Button(this)
+        startButton.text = "Iniciar servidor"
+
+        val stopButton = Button(this)
+        stopButton.text = "Detener servidor"
+        stopButton.isEnabled = false
+
+        startButton.setOnClickListener {
             pulseAudioServer?.start()
-            tvStatus.text = "Estado: Servidor Corriendo (Puerto 4713)"
-            btnStart.isEnabled = false
-            btnStop.isEnabled = true
+            status.text = "Servidor activo en puerto 4713"
+            startButton.isEnabled = false
+            stopButton.isEnabled = true
         }
 
-        btnStop.setOnClickListener {
+        stopButton.setOnClickListener {
             pulseAudioServer?.stop()
-            tvStatus.text = "Estado: Servidor Detenido"
-            btnStart.isEnabled = true
-            btnStop.isEnabled = false
+            status.text = "Servidor detenido"
+            startButton.isEnabled = true
+            stopButton.isEnabled = false
         }
+
+        layout.addView(title)
+        layout.addView(status)
+        layout.addView(startButton)
+        layout.addView(stopButton)
+
+        setContentView(layout)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Ensure server stops when app closes
         pulseAudioServer?.stop()
     }
 }
